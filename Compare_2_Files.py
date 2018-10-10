@@ -12,8 +12,31 @@ Created on Mon Oct  8 15:44:56 2018
 import os
 import argparse
 
+#This function eliminates the unwanted tabs, quotes and newline characters in the given string
+#It will also eliminate any trailing space in the cleaned string before returning
+def clean_string(str):
+    length_of_str=len(str)
+    #print('Uncleaned String :#',str,'#')
+    #print("Length of string is :",length_of_str)
+    i=0
+    cleaned_str=""
+    to_eliminate=['\n','\t','\"']
+    while i<length_of_str:
+        if str[i] in to_eliminate:
+            i+=1
+        else:
+            cleaned_str=cleaned_str.__add__(str[i])
+            i+=1
+    #print('Cleaned String :#',cleaned_str,'#, Length:',len(cleaned_str))
+    #Check if the last character is a space. If so eliminate it
+    if len(cleaned_str)>0 and cleaned_str[-1]==' ':
+        return cleaned_str[0:-1]
+    else:
+        return cleaned_str
+
+
 #This function is for reading each row of the specified file and loading them into a list
-def load_list(file_name,list_for_loading,verbose):
+def load_list(file_name,list_for_loading,file_type,verbose):
     print('Loading items from  : ',file_name)
     f=open(file_name,'r')
     while True:
@@ -25,16 +48,22 @@ def load_list(file_name,list_for_loading,verbose):
                 print(line,end='')
             #check if the last character read in the line is a newline char. If so eliminate it while appending to the list
             #Also check if there is an extra blank character at the end. If so eliminate it while appending to the list
-            if len(line)>1:
-                if line[-1]=='\n':
-                    if line[-2]==' ':
-                        list_for_loading.append(line[0:-2])
-                    else:
-                        list_for_loading.append(line[0:-1])
-            elif line[0]=='\n':
-                 continue
+            if file_type=="Master":
+                if len(line)>1:
+                    if line[-1]=='\n':
+                        if line[-2]==' ':
+                            list_for_loading.append(line[0:-2])
+                        else:
+                            list_for_loading.append(line[0:-1])
+                elif line[0]=='\n':
+                     continue
+                else:
+                    list_for_loading.append(line)
             else:
-                list_for_loading.append(line)
+                cln_str=clean_string(line)
+                if len(cln_str)>0:
+                    #print('loading string:#',cln_str,'#')
+                    list_for_loading.append(cln_str)
     f.close()
     if verbose==True:
         print('The loaded list is :',list_for_loading)
@@ -101,14 +130,15 @@ else:
     To_compare_file='Location_list.csv'
 print(To_compare_file)
 
+
 #Load the Master file
 Lifer_list=[]
-load_list(Lifer_file,Lifer_list,verbose)
+load_list(Lifer_file,Lifer_list,"Master",verbose)
 #print('List in Main : ',Lifer_list)
 
 #Load the File_for_Compare
 Location_list=[]
-load_list(To_compare_file,Location_list,verbose)
+load_list(To_compare_file,Location_list,"To_Compare",verbose)
 #print('List in Main : ',Location_list)
 
 #Compare
