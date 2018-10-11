@@ -71,6 +71,7 @@ def load_list(file_name,list_for_loading,file_type,verbose):
 
 #This is function will check return the list items in List2 that are not present in List1
 # Items not found are added to the List3
+#The comparison is case insensitive
 def compare(List1,List2,List3,verbose):
     for item2 in List2:
         if verbose==True:
@@ -79,7 +80,7 @@ def compare(List1,List2,List3,verbose):
         for item1 in List1:
             if verbose==True:
                 print('Comparing with item : ',item1)
-            if item2==item1:
+            if item2.upper()==item1.upper():
                 if verbose==True:
                     print('Match found')
                 flag=False
@@ -103,9 +104,10 @@ def write_list(file_for_writing,List):
 #Parse the command line arguments first
 parser = argparse.ArgumentParser()
 parser.add_argument("-v", "--verbose", action="store_true",help="Increase output verbosity")
-parser.add_argument("-d", "--directory", help="Specify the working directory")
+parser.add_argument("-d", "--directory", help="Specify the working directory, The inputs files and the output file will be in this directory")
 parser.add_argument("-m", "--master", help="Specify the name of the MASTER file")
 parser.add_argument("-c", "--compare", help="Specify the name of file to compare")
+parser.add_argument("-o", "--output", help="Specify the name of the output file")
 args=parser.parse_args()
 if args.verbose:
     verbose=True
@@ -127,9 +129,13 @@ print(Lifer_file)
 if args.compare!=None:
     To_compare_file=args.compare
 else:    
-    To_compare_file='Location_list.csv'
+    To_compare_file='ebird_scraped.csv'
 print(To_compare_file)
 
+if args.output!=None:
+    Potential_Lifers_file=args.output
+else:
+    Potential_Lifers_file='Potential_Lifers.csv'
 
 #Load the Master file
 Lifer_list=[]
@@ -147,7 +153,6 @@ compare(Lifer_list,Location_list,New_list,verbose)
 #print('New items are : ',New_list)
 
 #Write the New_list into the target file
-Potential_Lifers_file='Potential_Lifers.csv'
 write_list(Potential_Lifers_file,New_list)
 #load_list(Potential_Lifers_file,Lifer_list)
 #print('List in Main : ',Lifer_list)
