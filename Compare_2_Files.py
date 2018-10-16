@@ -146,8 +146,10 @@ def load_list_hotspot(file_name,list_for_loading,verbose):
         else:
             if verbose==True:
                 print(line,end='')
-            #If it is a generic species entry, (represented by sp.) then exclude
+            #If it is a generic species entry, (represented by sp.) or two similar species (represented by /) then exclude
             if "sp." in line:
+                continue
+            elif "/" in line:
                 continue
             cln_str=clean_string(line)
             if len(cln_str)>0:
